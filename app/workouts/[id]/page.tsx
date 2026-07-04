@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 import {
   addExerciseSet,
+  addSetToExercise,
   deleteExerciseSet,
+  updateExerciseSet,
 } from "../../../src/server/workouts";
 
 type WorkoutDetailsPageProps = {
@@ -49,7 +51,7 @@ export default async function WorkoutDetailsPage({
     <main className="min-h-screen bg-zinc-950 p-8 text-white">
       <section className="mx-auto max-w-4xl">
         <Link href="/workouts" className="text-sm text-blue-400">
-          ← Back to workouts
+          {"\u2190"} Back to workouts
         </Link>
 
         <header className="mt-6 rounded-3xl border border-zinc-800 bg-zinc-900 p-6">
@@ -165,42 +167,115 @@ export default async function WorkoutDetailsPage({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-[48px_1fr_1fr_1fr_72px] gap-2 border-b border-zinc-800 px-5 py-3 text-sm text-zinc-500">
+                <div className="grid grid-cols-[48px_1fr_1fr_1fr_80px_72px] gap-2 border-b border-zinc-800 px-5 py-3 text-sm text-zinc-500">
                   <p>#</p>
                   <p>Weight</p>
                   <p>Reps</p>
                   <p>RIR</p>
-                  <p className="text-right">Action</p>
+                  <p>Update</p>
+                  <p className="text-right">Delete</p>
                 </div>
 
                 <div className="divide-y divide-zinc-800">
                   {workoutExercise.sets.map((set, index) => (
-                    <div
+                    <form
                       key={set.id}
-                      className="grid grid-cols-[48px_1fr_1fr_1fr_72px] items-center gap-2 px-5 py-4 text-sm"
+                      action={updateExerciseSet}
+                      className="grid grid-cols-[48px_1fr_1fr_1fr_80px_72px] items-center gap-2 px-5 py-4 text-sm"
                     >
+                      <input type="hidden" name="setId" value={set.id} />
+                      <input type="hidden" name="workoutId" value={workout.id} />
+
                       <p className="text-zinc-500">{index + 1}</p>
 
-                      <p className="font-medium">{set.weight} lb</p>
+                      <input
+                        name="weight"
+                        type="number"
+                        step="0.5"
+                        defaultValue={set.weight}
+                        className="rounded-lg bg-zinc-950 px-3 py-2 font-medium text-white outline-none"
+                        required
+                      />
 
-                      <p className="font-medium">{set.reps}</p>
+                      <input
+                        name="reps"
+                        type="number"
+                        defaultValue={set.reps}
+                        className="rounded-lg bg-zinc-950 px-3 py-2 font-medium text-white outline-none"
+                        required
+                      />
 
-                      <p className="font-medium">{set.rir}</p>
+                      <input
+                        name="rir"
+                        type="number"
+                        step="0.5"
+                        defaultValue={set.rir}
+                        className="rounded-lg bg-zinc-950 px-3 py-2 font-medium text-white outline-none"
+                        required
+                      />
 
-                      <form
-                        className="text-right"
-                        action={async () => {
+                      <button type="submit" className="text-blue-400">
+                        Update
+                      </button>
+
+                      <button
+                        formAction={async () => {
                           "use server";
                           await deleteExerciseSet(set.id, workout.id);
                         }}
+                        className="text-red-400"
                       >
-                        <button type="submit" className="text-red-400">
-                          Delete
-                        </button>
-                      </form>
-                    </div>
+                        Delete
+                      </button>
+                    </form>
+                      
                   ))}
                 </div>
+
+                <form
+                  action={addSetToExercise}
+                  className="grid gap-3 border-t border-zinc-800 p-5 md:grid-cols-4"
+                >
+                  <input type="hidden" name="workoutId" value={workout.id} />
+                  <input
+                    type="hidden"
+                    name="workoutExerciseId"
+                    value={workoutExercise.id}
+                  />
+
+                  <input
+                    name="weight"
+                    type="number"
+                    step="0.5"
+                    placeholder="Weight"
+                    className="rounded-xl bg-zinc-800 px-3 py-3 text-white outline-none"
+                    required
+                  />
+
+                  <input
+                    name="reps"
+                    type="number"
+                    placeholder="Reps"
+                    className="rounded-xl bg-zinc-800 px-3 py-3 text-white outline-none"
+                    required
+                  />
+
+                  <input
+                    name="rir"
+                    type="number"
+                    step="0.5"
+                    placeholder="RIR"
+                    className="rounded-xl bg-zinc-800 px-3 py-3 text-white outline-none"
+                    required
+                  />
+
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-blue-600 px-4 py-3 font-medium transition hover:bg-blue-500"
+                  >
+                    Add Set
+                  </button>
+                </form>
               </div>
             );
           })}

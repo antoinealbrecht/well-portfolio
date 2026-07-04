@@ -65,6 +65,48 @@ export async function addExerciseSet(formData: FormData) {
   revalidatePath(`/workouts/${workoutId}`);
 }
 
+export async function addSetToExercise(formData: FormData) {
+  const workoutId = Number(formData.get("workoutId"));
+  const workoutExerciseId = Number(formData.get("workoutExerciseId"));
+  const weight = Number(formData.get("weight"));
+  const reps = Number(formData.get("reps"));
+  const rir = Number(formData.get("rir"));
+
+  await prisma.exerciseSet.create({
+    data: {
+      workoutExerciseId,
+      weight,
+      reps,
+      rir,
+    },
+  });
+
+  revalidatePath("/workouts");
+  revalidatePath(`/workouts/${workoutId}`);
+}
+
+export async function updateExerciseSet(formData: FormData) {
+  const id = Number(formData.get("setId"));
+  const workoutId = Number(formData.get("workoutId"));
+  const weight = Number(formData.get("weight"));
+  const reps = Number(formData.get("reps"));
+  const rir = Number(formData.get("rir"));
+
+  await prisma.exerciseSet.update({
+    where: {
+      id,
+    },
+    data: {
+      weight,
+      reps,
+      rir,
+    },
+  });
+
+  revalidatePath("/workouts");
+  revalidatePath(`/workouts/${workoutId}`);
+}
+
 export async function deleteExerciseSet(id: number, workoutId: number) {
   await prisma.exerciseSet.delete({
     where: {
