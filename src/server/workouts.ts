@@ -17,7 +17,7 @@ export async function createWorkout(formData: FormData) {
 
 export async function addExerciseSet(formData: FormData) {
   const workoutId = Number(formData.get("workoutId"));
-  const exerciseName = String(formData.get("exerciseName"));
+  const exerciseName = String(formData.get("exerciseName")).trim().toLowerCase();
   const muscleGroup = String(formData.get("muscleGroup"));
   const weight = Number(formData.get("weight"));
   const reps = Number(formData.get("reps"));
