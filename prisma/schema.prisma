@@ -66,13 +66,26 @@ model WorkoutExercise {
   sets        ExerciseSet[]
 }
 
-model ExerciseSet {
-  id                Int               @id @default(autoincrement())
+enum ExerciseSetType {
+  REGULAR
+  MYOREP
+  MYOREP_MATCH
+}
 
-  workoutExercise   WorkoutExercise   @relation(fields: [workoutExerciseId], references: [id])
+model ExerciseSet {
+  id                Int             @id @default(autoincrement())
+
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
   workoutExerciseId Int
 
+  position          Int             @default(0)
+  completed         Boolean         @default(true)
+  skipped           Boolean         @default(false)
+  setType           ExerciseSetType @default(REGULAR)
+
   weight            Float
-  reps              Int
+  reps              Int?
   rir               Float
+
+  @@index([workoutExerciseId, position])
 }
