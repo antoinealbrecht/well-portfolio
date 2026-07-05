@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { StatCard } from "../../src/components/dashboard/StatCard";
-import { prisma } from "../../src/lib/prisma";
+import { StatCard } from "./StatCard";
+import { prisma } from "../../lib/prisma";
 
 export default async function DashboardPage() {
   const latestWeight = await prisma.bodyWeightEntry.findFirst({

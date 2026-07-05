@@ -13,6 +13,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const navigationItems = [
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+  },
+  {
+    href: "/workouts",
+    label: "Workouts",
+  },
+  {
+    href: "/templates",
+    label: "Templates",
+  },
+  {
+    href: "/nutrition",
+    label: "Nutrition",
+  },
+  {
+    href: "/weight",
+    label: "Weight",
+  },
+  {
+    href: "/recovery",
+    label: "Recovery",
+  },
+];
+
 export const metadata: Metadata = {
   title: "Well",
   description: "Evidence-based hypertrophy training dashboard",
@@ -29,63 +56,44 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-zinc-950 text-white">
-        <div className="flex min-h-screen">
-          <aside className="hidden w-64 border-r border-zinc-800 bg-zinc-950 p-6 md:block">
-            <h1 className="text-xl font-bold">Well</h1>
+        <div className="flex min-h-screen flex-col md:flex-row">
+          <header className="border-b border-zinc-800 bg-zinc-950 px-5 py-4 md:hidden">
+            <Link href="/dashboard" className="text-xl font-bold">
+              Well
+            </Link>
+
+            <nav className="mt-4 flex gap-2 overflow-x-auto pb-1">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="shrink-0 rounded-lg px-3 py-2 text-sm text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </header>
+
+          <aside className="hidden w-64 shrink-0 border-r border-zinc-800 bg-zinc-950 p-6 md:block">
+            <Link href="/dashboard" className="text-xl font-bold">
+              Well
+            </Link>
 
             <nav className="mt-8 space-y-2">
-              <Link
-                href="/dashboard"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Dashboard
-              </Link>
-
-              <Link
-                href="/workouts"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Workouts
-              </Link>
-
-              <Link
-              href="/nutrition"
-              className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-              Nutrition
-              </Link>
-
-              <Link
-                href="/weight"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Weight
-              </Link>
-
-              <Link
-                href="/analytics"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Analytics
-              </Link>
-
-              <Link
-                href="/recovery"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Recovery
-              </Link>
-
-              <Link
-                href="/settings"
-                className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-zinc-900 hover:text-white"
-              >
-                Settings
-              </Link>
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="block rounded-lg px-3 py-2 text-zinc-300 transition hover:bg-zinc-900 hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </nav>
           </aside>
 
-          <main className="flex-1">{children}</main>
+          <div className="min-w-0 flex-1">{children}</div>
         </div>
       </body>
     </html>
