@@ -42,28 +42,42 @@ model RecoveryEntry {
 }
 
 model Workout {
-  id        Int           @id @default(autoincrement())
-  name      String
-  date      DateTime      @default(now())
+  id   Int      @id @default(autoincrement())
+  name String
+  date DateTime @default(now())
+
+  template   WorkoutTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  templateId Int?
+
   exercises WorkoutExercise[]
+
+  @@index([templateId])
 }
 
 model Exercise {
-  id          Int                @id @default(autoincrement())
-  name        String             @unique
-  muscleGroup String             @default("Unassigned")
-  workouts    WorkoutExercise[]
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  muscleGroup String @default("Unassigned")
+
+  workouts          WorkoutExercise[]
+  templateExercises TemplateExercise[]
 }
 
 model WorkoutExercise {
-  id          Int         @id @default(autoincrement())
-  workout     Workout     @relation(fields: [workoutId], references: [id])
-  workoutId   Int
+  id Int @id @default(autoincrement())
 
-  exercise    Exercise    @relation(fields: [exerciseId], references: [id])
-  exerciseId  Int
+  workout   Workout @relation(fields: [workoutId], references: [id])
+  workoutId Int
 
-  sets        ExerciseSet[]
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+
+  position Int @default(0)
+
+  sets ExerciseSet[]
+
+  @@index([workoutId, position])
+  @@index([exerciseId])
 }
 
 enum ExerciseSetType {
@@ -73,19 +87,65 @@ enum ExerciseSetType {
 }
 
 model ExerciseSet {
-  id                Int             @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
   workoutExerciseId Int
 
-  position          Int             @default(0)
-  completed         Boolean         @default(true)
-  skipped           Boolean         @default(false)
-  setType           ExerciseSetType @default(REGULAR)
+  position  Int             @default(0)
+  completed Boolean         @default(true)
+  skipped   Boolean         @default(false)
+  setType   ExerciseSetType @default(REGULAR)
 
-  weight            Float
-  reps              Int?
-  rir               Float
+  weight Float
+  reps   Int?
+  rir    Float
 
   @@index([workoutExerciseId, position])
+}
+
+model WorkoutTemplate {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exercises TemplateExercise[]
+  workouts  Workout[]
+}
+
+model TemplateExercise {
+  id Int @id @default(autoincrement())
+
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  templateId Int
+
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  exerciseId Int
+
+  position Int @default(0)
+
+  sets TemplateSet[]
+
+  @@index([templateId, position])
+  @@index([exerciseId])
+}
+
+model TemplateSet {
+  id Int @id @default(autoincrement())
+
+  templateExercise   TemplateExercise @relation(fields: [templateExerciseId], references: [id], onDelete: Cascade)
+  templateExerciseId Int
+
+  position Int @default(0)
+  setType  ExerciseSetType @default(REGULAR)
+
+  targetWeight Float?
+  minReps     Int   @default(8)
+  maxReps     Int   @default(12)
+  targetRir   Float @default(2)
+
+  @@index([templateExerciseId, position])
 }
